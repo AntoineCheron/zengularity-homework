@@ -1,6 +1,5 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png">
+  <div id="app" class="container">
     <router-view></router-view>
   </div>
 </template>
@@ -11,13 +10,29 @@ export default {
 };
 </script>
 
-<style>
+<style lang='scss'>
+// Import css framework bulma + fonts
+@import 'src/assets/css/var.scss';
+@import 'src/assets/css/bulma-custom';
+@import 'node_modules/bulma/bulma';
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,700|Roboto:400,500,700');
+@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+@import 'src/assets/css/buttons';
+
+body {
+  background-color: $background-white;
+
+  h1 {
+  	font-weight: bold;
+  	font-size: 26px;
+  }
+}
+
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Montserrat', 'Roboto', 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  width: 100vw;
+  height: 100vh;
 }
 </style>
