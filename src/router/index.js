@@ -1,8 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Login from '@/components/Login';
-import ForgotPassword from '@/components/ForgotPassword';
-import Register from '@/components/Register';
 
 Vue.use(Router);
 
@@ -11,22 +9,25 @@ export default new Router({
     {
       path: '/',
       name: 'App',
-      component: Login,
+      redirect: '/login',
     },
     {
       path: '/login',
       name: 'Login',
       component: Login,
+      props: { mode: 'login' },
     },
     {
       path: '/forgot',
       name: 'Forgot Password',
-      component: ForgotPassword,
+      component: Login,
+      props: { mode: 'forgot' },
     },
     {
       path: '/register',
       name: 'Create a new account',
-      component: Register,
+      component: Login,
+      props: { mode: 'register' },
     },
   ],
 });
