@@ -1,0 +1,15 @@
+.button {
+	width: 100%;
+	text-transform: uppercase;
+	text-align: center;
+	font-weight: bold;
+	border: none;
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.green-button {
+	@extend .button;
+
+	background-color: $green;
+}
