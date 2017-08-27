@@ -1,5 +1,5 @@
 <template>
-<div id="newsfeed" class="column is-one-quarter">
+<div id="newsfeed">
     <h1 class="category-title">Events</h1>
     <news v-for="singleNews in news" :news="singleNews"></news>
 </div>
