@@ -2,13 +2,26 @@
 <div id="dashboard">
 <div class="tile is-ancestor">
   <div class="tile is-parent">
-    <energy-distribution class="tile is-child box" :producing="true" :distribution="productionDistribution" :current="currentProduction"></energy-distribution>
+    <energy-distribution 
+      class="tile is-child box" 
+      :producing="true" 
+      :distribution="productionDistribution" 
+      :current="currentProduction">
+    </energy-distribution>
   </div>
   <div class="tile is-parent">
-    <prod-consumption-ratio class="tile is-child box"></prod-consumption-ratio>
+    <prod-consumption-ratio 
+      class="tile is-child box"
+      :ratio="currentProduction / (currentProduction + currentConsumption)">
+    </prod-consumption-ratio>
   </div>
   <div class="tile is-parent">
-      <energy-distribution class="tile is-child box" :producing="false" :distribution="consumptionDistribution" :current="currentConsumption"></energy-distribution>
+      <energy-distribution 
+        class="tile is-child box" 
+        :producing="false" 
+        :distribution="consumptionDistribution" 
+        :current="currentConsumption">
+      </energy-distribution>
   </div>
 </div>
 </div>
