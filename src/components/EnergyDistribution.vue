@@ -110,6 +110,7 @@
         .percentage {
           width: 25px;
           min-width: 25px;
+          text-align: right;
         }
       }
     }

@@ -8,11 +8,10 @@
             <dashboard-nav></dashboard-nav>
             <router-view></router-view>
           </div>
-          <div class ="column is-one-third">
+          <div class ="column is-one-quarter">
             <news-feed></news-feed>
           </div>
         </div>
-        
     </div>
 </div>
 </template>

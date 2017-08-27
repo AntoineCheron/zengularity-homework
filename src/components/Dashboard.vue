@@ -5,10 +5,7 @@
     <energy-distribution class="tile is-child box" :producing="true" :distribution="productionDistribution" :current="currentProduction"></energy-distribution>
   </div>
   <div class="tile is-parent">
-    <article class="tile is-child box">
-      <p class="title">Foo</p>
-      <p class="subtitle">Bar</p>
-    </article>
+    <prod-consumption-ratio class="tile is-child box"></prod-consumption-ratio>
   </div>
   <div class="tile is-parent">
       <energy-distribution class="tile is-child box" :producing="false" :distribution="consumptionDistribution" :current="currentConsumption"></energy-distribution>
@@ -19,10 +16,12 @@
 
 <script type="text/javascript">
 import EnergyDistribution from './EnergyDistribution';
+import ProdConsumptionRatio from './ProdConsumptionRatio';
 
 export default {
   components: {
     EnergyDistribution,
+    ProdConsumptionRatio,
   },
   data() {
     return {
