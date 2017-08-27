@@ -24,17 +24,29 @@
       </energy-distribution>
   </div>
 </div>
+<div class="tile is-ancestor">
+  <div class="tile is-parent">
+    <chart 
+      class="tile is-child box"
+      :currentStorage="180.9"
+      :currentLevel="60"
+      :autonomy="5.40">
+    </chart>
+  </div>
+</div>
 </div>
 </template>
 
 <script type="text/javascript">
 import EnergyDistribution from './EnergyDistribution';
 import ProdConsumptionRatio from './ProdConsumptionRatio';
+import Chart from './Chart';
 
 export default {
   components: {
     EnergyDistribution,
     ProdConsumptionRatio,
+    Chart,
   },
   data() {
     return {

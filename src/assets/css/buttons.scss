@@ -12,6 +12,22 @@
 	}
 }
 
+.no-outline-button {
+	border: none;
+	margin: 0;
+	padding: 0;
+	background: none;
+
+	&:hover {
+		cursor: pointer;
+	}
+
+	&:focus {
+		outline: none;
+		border: none;
+	}
+}
+
 .green-button {
 	@extend .button;
 

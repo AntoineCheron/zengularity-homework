@@ -2,6 +2,16 @@
 
 .card {
 	border-radius: 6px;
+
+	&:hover {
+		box-shadow: 0 4px 6px 0 rgba(0,0,0,0.50);
+	}
+}
+
+.tile.is-child {
+	&:hover {
+		box-shadow: 0 4px 6px 0 rgba(0,0,0,0.50);
+	}
 }
 
 // TEXT STYLES CLASSES
@@ -11,16 +21,42 @@ h2 {
 }
 
 .dashboard-card-title {
-    color: $grey;
-    font-weight: bold;
-    text-transform: capitalize;
-  }
+	color: $grey;
+	font-weight: bold;
+	text-transform: capitalize;
+}
 
 .category-title {
 	@extend .grey-text;
 	font-size: 22px;
 	font-weight: bold;
 	text-transform: uppercase;
+}
+
+// ELEMENTS STYLE
+
+.single-data {
+	margin-bottom: 30px;
+	line-height: 1;
+	.upper-text {
+		color: $grey;
+		font-size: 12px;
+	}
+
+	.big-number {
+		font-size: 36px;
+		font-weight: bold;
+	}
+
+	.unit {
+		font-size: 12px;
+		font-weight: bold;
+		color: $black;
+	}
+
+	&.last {
+		margin-bottom: 0;
+	}
 }
 
 // TEXT COLORATION CLASSES
@@ -38,6 +74,10 @@ h2 {
 
 .black-text {
 	color: $black;
+}
+
+.yellow-text {
+	color: $yellow;
 }
 
 .grey-text {

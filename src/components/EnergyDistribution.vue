@@ -9,9 +9,9 @@
     </div>
     <p v-if="distribution.length === 0" style="text-align: center">No data available</p>
   </div>
-  <div class="bottom">
-    <p class="grey-text">You are currently {{ actionType }}</p>
-    <p><span class="current-text" :class="currentColorClass">{{ current }}</span><span class="unit"> {{ unit }}</span>
+  <div class="bottom single-data last">
+    <p class="grey-text upper-text">You are currently {{ actionType }}</p>
+    <p><span class="big-number" :class="currentColorClass">{{ current }}</span><span class="unit"> {{ unit }}</span>
     </p>
   </div>
 </div>
@@ -112,22 +112,6 @@
           min-width: 25px;
           text-align: right;
         }
-      }
-    }
-
-    .bottom {
-      font-size: 12px;
-      line-height: 1;
-
-      .current-text {
-        font-size: 36px;
-        font-weight: bold;
-      }
-
-      .unit {
-        color: $black;
-        font-weight: bold;
-        font-size: 11px;
       }
     }
   }
