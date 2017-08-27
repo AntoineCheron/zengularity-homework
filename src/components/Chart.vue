@@ -122,7 +122,6 @@ export default {
     border-left: 1px solid $light-grey;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding-top: 0;
     padding-bottom: 0;
   }

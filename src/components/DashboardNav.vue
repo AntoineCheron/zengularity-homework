@@ -5,18 +5,13 @@
       <router-link to="/home/power-plant-manager" class="nav-link nav-link-last category-title">Power plant manager</router-link>
     </div>
     <div>
-      <button class="button green-button" @click="addPowerPlant"><span class="add-power-plant-button-span"><span class="icon is-small"><i class="fa fa-plus"></i></span> add power plant</span></button>
+      <button class="button green-button" @click="$emit('showPowerPlantModal')"><span class="add-power-plant-button-span"><span class="icon is-small"><i class="fa fa-plus"></i></span> add power plant</span></button>
     </div>
   </nav>
 </template>
 
 <script type="text/javascript">
   export default {
-    methods: {
-      addPowerPlant() {
-        // TODO
-      },
-    },
   };
 </script>
 

@@ -2,6 +2,7 @@
 
 .card {
 	border-radius: 6px;
+	overflow: hidden;
 
 	&:hover {
 		box-shadow: 0 4px 6px 0 rgba(0,0,0,0.50);

@@ -178,6 +178,10 @@
         .login-card {
             align-content: stretch;
 
+            &:hover {
+                box-shadow: 0 2px 3px rgba(39, 43, 45, 0.1), 0 0 0 1px rgba(39, 43, 45, 0.1);
+            }
+
             & > .columns {
                 height: 80vh;
 
