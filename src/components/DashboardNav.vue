@@ -25,7 +25,7 @@
 
   #dashboard-nav {
     display: flex;
-    margin-bottom: 26px;
+    margin-bottom: 32px;
     justify-content: space-between;
 
     .nav-link {
