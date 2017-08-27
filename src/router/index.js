@@ -13,15 +13,17 @@ export default new Router({
       path: '/',
       name: 'App',
       component: Home,
-      redirect: '/dashboard',
+      redirect: '/home/',
     },
     {
-      path: '/dashboard',
-      name: 'Dashboard',
+      path: '/home',
+      name: 'Home',
       component: Home,
+      redirect: '/home/dashboard',
       children: [
         {
-          path: '',
+          path: 'dashboard',
+          name: 'Dashboard',
           component: Dashboard,
         },
         {

@@ -4,9 +4,12 @@
 	text-align: center;
 	font-weight: bold;
 	border: none;
-	padding-top: 8px;
-	padding-bottom: 8px;
+	padding: 8px 18px;
 	display: inline-block;
+
+	&:hover {
+		box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+	}
 }
 
 .green-button {
