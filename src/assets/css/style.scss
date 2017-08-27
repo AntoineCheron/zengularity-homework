@@ -1,0 +1,39 @@
+@import './var';
+
+.card {
+	border-radius: 6px;
+}
+
+// TEXT STYLES CLASSES
+
+h2 {
+	font-size: 16px;
+}
+
+.category-title {
+	@extend .grey-text;
+	font-size: 22px;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+// TEXT COLORATION CLASSES
+.red-text {
+	color: $red;
+}
+
+.green-text {
+	color: $green;
+}
+
+.black-text {
+	color: $black;
+}
+
+.grey-text {
+	color: $grey;
+}
+
+.light-grey-text {
+	color: $light-grey;
+}

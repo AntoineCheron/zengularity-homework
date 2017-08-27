@@ -12,7 +12,8 @@ export default {
 
 <style lang='scss'>
 // Import css framework bulma + fonts
-@import 'src/assets/css/var.scss';
+@import 'src/assets/css/style';
+@import 'src/assets/css/var';
 @import 'src/assets/css/bulma-custom';
 @import 'node_modules/bulma/bulma';
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,700|Roboto:400,500,700');
