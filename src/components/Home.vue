@@ -36,7 +36,7 @@ export default {
   },
   data() {
     return {
-      showAddPowerPlantModal: true,
+      showAddPowerPlantModal: false,
     };
   },
   methods: {
