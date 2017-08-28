@@ -25,7 +25,7 @@
                     <div class="select">
                       <select v-model="type">
                       <!-- TODO : remove the hard coding -->
-                        <option disabled value="">Type of power plant</option>
+                        <option disabled value=''>Type of power plant</option>
                         <option value='hydroelectric'>Hydroelectric</option>
                         <option value='solar'>Solar</option>
                         <option value='windmill'>Windmill</option>
