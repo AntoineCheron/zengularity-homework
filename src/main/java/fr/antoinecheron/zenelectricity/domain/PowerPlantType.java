@@ -1,4 +1,4 @@
-package fr.antoinecheron.zenelectricity.services.powerplant;
+package fr.antoinecheron.zenelectricity.domain;
 
 /**
  * Created by antoine on 31/08/2017.
