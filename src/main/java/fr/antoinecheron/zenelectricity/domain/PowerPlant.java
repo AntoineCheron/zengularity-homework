@@ -2,20 +2,15 @@ package fr.antoinecheron.zenelectricity.domain;
 
 import org.springframework.data.annotation.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import java.util.ArrayList;
 
 /**
  * Created by antoine on 31/08/2017.
  */
-@Entity
 public class PowerPlant {
 
     // Attributes
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final long id;
     private String name;
     private PowerPlantType type;

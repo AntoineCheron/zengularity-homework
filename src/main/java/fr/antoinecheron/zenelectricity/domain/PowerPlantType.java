@@ -3,7 +3,7 @@ package fr.antoinecheron.zenelectricity.domain;
 /**
  * Created by antoine on 31/08/2017.
  */
-enum PowerPlantType {
+public enum PowerPlantType {
 
     // Possible types
     HYDROELECTRIC(2, 6),
