@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by antoine on 02/09/2017.
  */
 @RestController
-@RequestMapping("/users")
 public class UserController {
 
     private ApplicationUserRepository applicationUserRepository;
