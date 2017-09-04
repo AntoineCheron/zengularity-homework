@@ -1,17 +1,21 @@
 package fr.antoinecheron.zenelectricity.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
+import org.springframework.hateoas.ResourceSupport;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by antoine on 31/08/2017.
  */
-public class PowerPlant {
+public class PowerPlant extends ResourceSupport {
 
     // Attributes
     @Id
-    private final long id;
+    private final String id;
     private String name;
     private PowerPlantType type;
     private int capacity;
@@ -19,11 +23,14 @@ public class PowerPlant {
     private ArrayList<ProductionEvent> events;
 
     // Constructor
-    public PowerPlant (long id, String name, String type, int capacity) {
-        this.id = id;
+    @JsonCreator
+    public PowerPlant (@JsonProperty("name") String name,
+                       @JsonProperty("type") String type,
+                       @JsonProperty("capacity") int capacity) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.capacity = capacity;
-        this.events = new ArrayList();
+        this.events = new ArrayList<>();
 
         // The power plant start producing on creation
         this.producing = true;
@@ -53,9 +60,6 @@ public class PowerPlant {
     }
 
     // Accessors
-    public long getId () {
-        return this.id;
-    }
 
     public String getName () {
         return this.name;

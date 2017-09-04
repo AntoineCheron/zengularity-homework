@@ -2,27 +2,32 @@ package fr.antoinecheron.zenelectricity.domain;
 
 
 import org.springframework.data.annotation.Id;
+import org.springframework.hateoas.ResourceSupport;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.UUID;
 
 /**
  * Created by antoine on 02/09/2017.
  */
-public class ApplicationUser {
+public class ApplicationUser extends ResourceSupport {
 
     @Id
-    private long id;
-    private String username;
+    private final String id;
+    private final String username;
+    private String email;
     private String password;
 
-    public long getId () {
-        return this.id;
+    @JsonCreator
+    public ApplicationUser (@JsonProperty("username") String username, @JsonProperty("email") String email) {
+        this.username = username;
+        this.email = email;
+        this.id = UUID.randomUUID().toString();
     }
 
     public String getUsername () {
         return this.username;
-    }
-
-    public void setUsername (String username) {
-        this.username = username;
     }
 
     public String getPassword () {
@@ -31,5 +36,13 @@ public class ApplicationUser {
 
     public void setPassword (String password) {
         this.password = password;
+    }
+
+    public String getEmail () {
+        return this.email;
+    }
+
+    public void setEmail (String email) {
+        this.email = email;
     }
 }
