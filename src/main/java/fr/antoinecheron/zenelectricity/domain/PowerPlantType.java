@@ -32,4 +32,9 @@ public enum PowerPlantType {
     public double getPercentageProducedPerHour () {
         return this.percentageProducedPerHour;
     }
+
+    @Override
+    public String toString () {
+        return this.name().toLowerCase();
+    }
 }
