@@ -14,15 +14,18 @@
 </template>
 
 <script type="text/javascript">
+import AuthService from '@/services/AuthService';
+
 export default {
   data() {
     return {
-      username: 'Antoine',
+      username: AuthService.connectedUser.username,
     };
   },
   methods: {
     signout() {
-      // TODO
+      AuthService.signout();
+      this.$router.push('/login');
     },
   },
 };

@@ -76,15 +76,15 @@
                                 </div>
                                 <div class="field">
                                     <p class="control has-icons-left">
-                                        <input v-model="emailConfirm" class="input" type="email" placeholder="Confirm your email address">
+                                        <input v-model="password" class="input" type="password" placeholder="Password">
                                         <span class="icon is-small is-left">
-                                            <i class="fa fa-envelope"></i>
+                                            <i class="fa fa-lock"></i>
                                         </span>
                                     </p>
                                 </div>
                                 <div class="field">
                                     <p class="control has-icons-left">
-                                        <input v-model="password" class="input" type="password" placeholder="Password">
+                                        <input v-model="passwordConfirm" class="input" type="password" placeholder="Confirm your password">
                                         <span class="icon is-small is-left">
                                             <i class="fa fa-lock"></i>
                                         </span>
@@ -118,6 +118,8 @@
 </template>
 
 <script>
+  import AuthService from '@/services/AuthService';
+
   export default {
     props: ['mode'],
     data() {
@@ -127,8 +129,8 @@
         registerTitle: 'Many thanks for joining us !',
         username: '',
         email: '',
-        emailConfirm: '',
         password: '',
+        passwordConfirm: '',
         error: '',
       };
     },
@@ -137,21 +139,53 @@
     },
     methods: {
       login() {
-        // TODO
-        alert('login');
+        // Create the data object to pass to login
+        const loginData = {
+          username: this.username,
+          password: this.password,
+        };
+        // Make the login request
+        AuthService.login(loginData, this.loginCallback, this.errorCallback);
+        // Empty the password field
+        this.password = undefined;
+      },
+      loginCallback() {
+        const redirectTo = this.$route.query.redirectTo ? this.$route.query.redirectTo : '/home';
+        this.$router.push(redirectTo);
+        this.emptyFields();
       },
       forgot() {
         // TODO
         alert('forgot');
       },
       register() {
-        // TODO
-        if (this.email === this.emailConfirm && this.email !== '' && this.username !== '' && this.password !== '') {
+        if (this.password === this.passwordConfirm && this.email !== '' && this.username !== '' && this.password !== '') {
+          // Empty the error field
           this.error = '';
-          alert('register');
+          // Create the data object to pass to register
+          const registerData = {
+            username: this.username,
+            email: this.email,
+            password: this.password,
+          };
+          // Make the register request
+          AuthService.register(registerData, this.registerCallback, this.errorCallback);
         } else {
-          this.error = 'Error ! The two email address you typed are different';
+          this.error = 'Error ! Passwords don\'t match';
         }
+      },
+      registerCallback() {
+        this.login();
+      },
+      errorCallback(error) {
+        if (this.error.response.status === 403) {
+            this.error = 'Wrong username or password';
+        } else if (this.error.response.status === 500) {
+            this.error = 'Internal server error';
+        } else {
+            this.error = error;
+        }
+        this.password = '';
       },
       switchToForgot() {
         this.$router.push('/forgot');
@@ -159,8 +193,14 @@
       switchToRegister() {
         this.$router.push('/register');
       },
+      emptyFields() {
+        this.username = '';
+        this.password = '';
+        this.passwordConfirm = '';
+        this.email = '';
+      },
     },
-};
+  };
 </script>
 
 <style lang="scss" scoped>

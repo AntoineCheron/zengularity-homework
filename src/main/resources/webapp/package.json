@@ -11,8 +11,10 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "axios": "^0.16.2",
     "bulma": "^0.5.1",
     "highcharts": "^5.0.14",
+    "js-sha256": "^0.6.0",
     "moment": "^2.18.1",
     "vue": "^2.3.3",
     "vue-highcharts": "0.0.10",

@@ -5,9 +5,11 @@ import Home from '@/components/Home';
 import Dashboard from '@/components/Dashboard';
 import PowerPlantManager from '@/components/PowerPlantManager';
 
+import AuthService from '@/services/AuthService';
+
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: '/',
@@ -52,3 +54,9 @@ export default new Router({
     },
   ],
 });
+
+router.beforeEach((to, from, next) => {
+  AuthService.verifyRouteAccess(to, from, next);
+});
+
+export default router;
