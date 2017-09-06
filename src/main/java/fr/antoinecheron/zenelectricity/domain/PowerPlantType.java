@@ -1,8 +1,11 @@
 package fr.antoinecheron.zenelectricity.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * Created by antoine on 31/08/2017.
  */
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum PowerPlantType {
 
     // Possible types
@@ -24,6 +27,10 @@ public enum PowerPlantType {
     }
 
     // GETTERS
+
+    public String getName () {
+        return this.name().toLowerCase();
+    }
 
     public double getPercentageConsumedPerHour () {
         return this.percentageConsumedPerHour;
