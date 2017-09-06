@@ -26,6 +26,10 @@ public class ApplicationUser extends ResourceSupport {
         this.id = UUID.randomUUID().toString();
     }
 
+    public String getUsersId () {
+        return this.id;
+    }
+
     public String getUsername () {
         return this.username;
     }

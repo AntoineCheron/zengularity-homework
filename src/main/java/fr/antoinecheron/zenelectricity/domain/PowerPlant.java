@@ -19,17 +19,16 @@ public class PowerPlant extends ResourceSupport {
     private String type;
     private int capacity;
     private boolean producing;
-    private final String owner;
+    private String owner;
 
     // Constructor
     @JsonCreator
     public PowerPlant (@JsonProperty(value="name") String name,
                        @JsonProperty(value="type") String type,
-                       @JsonProperty(value="capacity") int capacity,
-                       @JsonProperty(value="owner") String owner) {
+                       @JsonProperty(value="capacity") int capacity) {
+
         this.name = name;
         this.capacity = capacity;
-        this.owner = owner;
         // Makes sure the type corresponds to a PowerPlantType
         this.type = PowerPlantType.valueOf(type.toUpperCase()).toString();
 
@@ -68,6 +67,10 @@ public class PowerPlant extends ResourceSupport {
     }
 
     public String getOwner () { return this.owner; }
+
+    public void setOwner (String owner) {
+        this.owner = owner;
+    }
 
 
     // Control methods

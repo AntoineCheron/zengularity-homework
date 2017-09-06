@@ -11,6 +11,6 @@ import reactor.core.publisher.Mono;
  */
 public interface PowerPlantRepository extends ReactiveMongoRepository<PowerPlant, String> {
 
-    Mono<PowerPlant> findByName (String name);
-    Flux<PowerPlant> findByType (PowerPlantType type);
+    Flux<PowerPlant> findByOwner (String owner);
+    Mono<PowerPlant> findByIdAndOwner (String id, String owner);
 }
