@@ -26,8 +26,6 @@ public class PowerPlantTypesController {
                 PowerPlantType.SOLAR,
                 PowerPlantType.WINDMILL);
 
-        // TODO : Correct wrong sending format
-
         return new ResponseEntity<>(types, HttpStatus.OK);
     }
 
