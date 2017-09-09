@@ -37,7 +37,6 @@ const AuthService = {
     // Do the connexion request
     axios.post(`${this.BASE_URL}/login`, data)
     .then((response) => {
-      console.log(response);
       if (response.status === 200) {
         // If connexion succes, store the User object and redirect to the asked page
         this.connectedUser = new User(formData.username, response.headers.authorization);
@@ -66,7 +65,6 @@ const AuthService = {
     // Post the new user request
     axios.post(`${this.BASE_URL}/sign-up`, data)
     .then((response) => {
-      console.log(response);
       if (response.status === 200) {
         // If the user has successfully been created, we go to /login
         successCallback();

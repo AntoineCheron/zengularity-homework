@@ -13,7 +13,7 @@
     <div class="news-header-badge" :class="colors.badge"></div>
   </div>
   <div class="news-body">
-    <p class="grey-text">During the last period, it <span v-if="news.producing">consumed </span><span v-else>produced </span><span :class="colors.consumption">{{ news.lastPeriod }}kW</span>, fixing its new stored quantity to <span class="black-text">{{ news.storage }}%</span>, at <span class="black-text">{{ news.storageQuantity }}kwh</span>.</p>
+    <p class="grey-text">During the last period, it <span v-if="news.producing">consumed </span><span v-else>produced </span><span :class="colors.consumption">{{ news.lastPeriod }}kW</span>, fixing its new stored quantity to <span class="black-text">{{ news.powerPlantCharge }}%</span>, at <span class="black-text">{{ news.storageQuantity }}kwh</span>.</p>
   </div>
 </div>
 </template>

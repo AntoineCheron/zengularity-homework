@@ -34,8 +34,10 @@ module.exports = {
       'optionalDependencies': ['test/unit/index.js']
     }],
     // avoid 'Component' is defined but never used
-    "no-unused-vars": 0,
+    'no-unused-vars': 0,
     // allow debugger during development
-    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
+    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
+    // remove no-param-reassign exceptions because they create a conflict against Vuex design
+    'no-param-reassign': 0,
   }
 }

@@ -14,9 +14,10 @@ public class ProductionEvent extends ResourceSupport implements Comparable<Produ
     // Attributes
     @Id
     private String id;
-    private final long timestamp;
+    private long timestamp;
     private final boolean producing;
     private final String owningPowerPlant;
+    private int powerPlantCharge;
 
     // Constructor
     @JsonCreator
@@ -38,12 +39,26 @@ public class ProductionEvent extends ResourceSupport implements Comparable<Produ
         return this.timestamp;
     }
 
+    public void setTimetstamp (long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public boolean isProducing () {
         return producing;
     }
 
     public String getOwningPowerPlant () {
         return this.owningPowerPlant;
+    }
+
+    public int getPowerPlantCharge () {
+        return this.powerPlantCharge;
+    }
+
+    public void setPowerPlantCharge (int charge) {
+        if (charge >= 0 && charge <= 100) {
+            this.powerPlantCharge = charge;
+        }
     }
 
     @Override

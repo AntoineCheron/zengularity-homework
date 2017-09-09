@@ -1,1 +1,7 @@
-// Example : export const ADD_TO_CART = 'ADD_TO_CART'
+export const ADD_POWER_PLANT = 'ADD_POWER_PLANT';
+
+export const REMOVE_POWER_PLANT = 'REMOVE_POWER_PLANT';
+
+export const TURN_PRODUCTION_ON = 'TURN_PRODUCTION_ON';
+
+export const TURN_PRODUCTION_OFF = 'TURN_PRODUCTION_OFF';

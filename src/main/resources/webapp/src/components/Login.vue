@@ -179,11 +179,11 @@
       },
       errorCallback(error) {
         if (this.error.response.status === 403) {
-            this.error = 'Wrong username or password';
+          this.error = 'Wrong username or password';
         } else if (this.error.response.status === 500) {
-            this.error = 'Internal server error';
+          this.error = 'Internal server error';
         } else {
-            this.error = error;
+          this.error = error;
         }
         this.password = '';
       },
