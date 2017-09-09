@@ -19,12 +19,7 @@ public class PowerPlantTypesController {
 
     @RequestMapping(method = GET)
     public HttpEntity<Flux<PowerPlantType>> getAllTypes () {
-        Flux<PowerPlantType> types = Flux.just(PowerPlantType.HYDROELECTRIC,
-                PowerPlantType.BIOMASS,
-                PowerPlantType.GAS,
-                PowerPlantType.NUCLEAR,
-                PowerPlantType.SOLAR,
-                PowerPlantType.WINDMILL);
+        Flux<PowerPlantType> types = Flux.just(PowerPlantType.values());
 
         return new ResponseEntity<>(types, HttpStatus.OK);
     }
