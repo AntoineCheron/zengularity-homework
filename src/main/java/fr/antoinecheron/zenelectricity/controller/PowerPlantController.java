@@ -1,6 +1,7 @@
 package fr.antoinecheron.zenelectricity.controller;
 
 import fr.antoinecheron.zenelectricity.domain.PowerPlant;
+import fr.antoinecheron.zenelectricity.domain.PowerPlantType;
 import fr.antoinecheron.zenelectricity.domain.ProductionEvent;
 import fr.antoinecheron.zenelectricity.repository.ApplicationUserRepository;
 import fr.antoinecheron.zenelectricity.repository.PowerPlantRepository;
@@ -75,13 +76,17 @@ public class PowerPlantController extends ControllerHelper {
             powerPlant.startProduction();
             // Create a new production event
             ProductionEvent startProdEvent = new ProductionEvent(true, powerPlant.getPowerPlantId());
+            // Set its charge value
+            startProdEvent.setPowerPlantCharge(computePowerPlantCharge(previous));
+            // Store it into the db
             productionEventRepository.save(startProdEvent).subscribe();
-
         } else if (previous.isConsuming() != powerPlant.isConsuming() && previous.isProducing()) {
             // Switch to consumption mode
             powerPlant.startConsumption();
             // Create a new production event
             ProductionEvent startConsEvent = new ProductionEvent(false, powerPlant.getPowerPlantId());
+            // Set its charge value
+            startConsEvent.setPowerPlantCharge(computePowerPlantCharge(previous));
             productionEventRepository.save(startConsEvent).subscribe();
         }
 
@@ -134,5 +139,98 @@ public class PowerPlantController extends ControllerHelper {
 
         // Returns the newly created powerplant
         return new ResponseEntity<>(Mono.just(powerPlant), HttpStatus.OK);
+    }
+
+    /* -----------------------------------------------------------------------------------------------------------------
+                                    PRIVATE METHODS
+     ---------------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Compute the charge of the given PowerPlant. Also create a out-of-bound event if needed.
+     *
+     * A out-of-bound event is an event with its powerPlantCharge set to 0 or 100 and the timestamp set to the moment
+     * when the powerplant's charge dropped to 0 or 100 depending on the production state. It is used in order to store
+     * a realistic representation of the history of the powerplant's charge level.
+     *
+     * @param oldPowerPlant {PowerPlant} the powerplant to compute the charge from
+     * @return {int} the powerplant's charge
+     */
+    private int computePowerPlantCharge (PowerPlant oldPowerPlant) {
+        // Retrieve the last event of the powerplant
+        ProductionEvent previous = productionEventRepository
+                .findFirstByOwningPowerPlantOrderByTimestampDesc(oldPowerPlant.getPowerPlantId()).block();
+
+        // Retrieve other data needed for the computation
+        long currentTimestamp = System.currentTimeMillis() / 1000L;
+        PowerPlantType type = PowerPlantType.valueOf(oldPowerPlant.getType());
+
+        // Pre-computation, timestamps are seconds
+        double hours = (previous.getTimestamp() - currentTimestamp) / 3600;
+
+        // Compute the current charge
+        if (previous.isProducing()) {
+            return computeChargeAfterProduction(previous, type.getPercentageProducedPerHour(), hours, oldPowerPlant);
+        } else {
+            return computeChargeAfterConsumption(previous, type.getPercentageConsumedPerHour(), hours, oldPowerPlant);
+        }
+    }
+
+    private int computeChargeAfterProduction (ProductionEvent previous, double productionRatePerHour, double hours,
+                                              PowerPlant srcPowerPlant) {
+        return computeCharge(true, previous, productionRatePerHour, hours, srcPowerPlant);
+    }
+
+    private int computeChargeAfterConsumption (ProductionEvent previous, double consumptionRatePerHour, double hours,
+                                               PowerPlant srcPowerPlant) {
+
+
+        return computeCharge(false, previous, consumptionRatePerHour, hours, srcPowerPlant);
+    }
+
+    private int computeCharge (boolean isProductionCharge, ProductionEvent previous,
+                               double ratePerHour, double hours, PowerPlant srcPowerPlant) {
+
+        // Compute the charge
+        Double chargeAsDouble = previous.getPowerPlantCharge() - (hours * ratePerHour);
+        int charge = chargeAsDouble.intValue();
+
+        // Then verify that it is not over 100 or 0, depending on the production state represented by the boolean
+        // isProductionChrge
+        boolean condition;
+        int value;
+
+        // Compute the condition to determine whether the charge level is out of bound.
+        if (isProductionCharge) {
+            value = 100;
+            condition = charge > value;
+        } else {
+            value = 0;
+            condition = charge < value;
+        }
+
+        // If the charge level is out of bound, create the zero event, or hundred event.
+        if (condition) {
+            createOutofboundEvent(previous, ratePerHour,
+                    srcPowerPlant.isProducing(), srcPowerPlant.getPowerPlantId());
+
+            return value;
+        } else {
+            return charge;
+        }
+
+    }
+
+    private void createOutofboundEvent (ProductionEvent previous, double rate, boolean isPowerPlantProducing,
+                                        String powerPlantId) {
+        // First we compute the time the charge raised 1000
+        Double timestampDouble = previous.getTimestamp() + (previous.getPowerPlantCharge() / (rate / 3600));
+        long timestamp = timestampDouble.longValue();
+
+        // Create the new event
+        ProductionEvent event = new ProductionEvent(isPowerPlantProducing, powerPlantId);
+        event.setTimetstamp(timestamp);
+
+        // Store it into the DB
+        productionEventRepository.save(event).subscribe();
     }
 }
