@@ -83,8 +83,21 @@
     },
     methods: {
       add() {
-        // TODO
-        this.close();
+        if (this.name !== '' && this.capacity !== '' && this.type !== '') {
+          this.error = '';
+          this.$store.dispatch('addPowerPlant', {
+            name: this.name,
+            capacity: this.capacity,
+            type: this.type,
+          });
+          this.close();
+        } else if (this.name === '') {
+          this.error = 'Name should not be empty';
+        } else if (this.capacity === '') {
+          this.error = 'Capacity should not be empty';
+        } else {
+          this.error = 'Please choose a powerplant type';
+        }
       },
       close() {
         this.$emit('closeAddPowerPlantModal');

@@ -1,48 +1,30 @@
 <template>
 <div id="newsfeed">
     <h1 class="category-title">Events</h1>
-    <news v-for="singleNews in news" :news="singleNews"></news>
+    <news v-for="singleEvent in events" :news="singleEvent"></news>
 </div>
 </template>
 
 <script type="text/javascript">
+import { mapGetters } from 'vuex';
 import News from './News';
 
 export default {
   components: {
     News,
   },
-  // props: ['news'],
-  data() {
-    return {
-      // TODO : remove those fake data. They are used only to test the UI.
-      news: [
-        {
-          powerPlant: 'Centrale 1',
-          state: 'producing',
-          lastPeriod: 18.5,
-          storage: 42,
-          storageQuantity: 19,
-          timestamp: 1503523672205,
-        },
-        {
-          powerPlant: 'Centrale 3',
-          state: 'producing',
-          lastPeriod: 18.5,
-          storage: 42,
-          storageQuantity: 19,
-          timestamp: 1503520672205,
-        },
-        {
-          powerPlant: 'Nuclear of the future',
-          state: 'consuming',
-          lastPeriod: 18.5,
-          storage: 42,
-          storageQuantity: 19,
-          timestamp: 1500523672205,
-        },
-      ],
-    };
+  computed: {
+    ...mapGetters({
+      events: 'getNewsfeedEvents',
+    }),
+  },
+  created() {
+    this.fetchData();
+  },
+  methods: {
+    fetchData() {
+      this.$store.dispatch('fetchAllEvents');
+    },
   },
 };
 </script>

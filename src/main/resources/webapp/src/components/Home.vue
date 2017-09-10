@@ -34,6 +34,10 @@ export default {
     DashboardNav,
     AddPowerPlantModal,
   },
+  created() {
+    this.$store.dispatch('fetchTypes');
+    this.$store.dispatch('fetchAllPowerPlants');
+  },
   data() {
     return {
       showAddPowerPlantModal: false,

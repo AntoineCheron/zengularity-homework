@@ -12,7 +12,7 @@
   <div class="tile is-parent">
     <prod-consumption-ratio 
       class="tile is-child box"
-      :ratio="currentProduction / (currentProduction + currentConsumption)">
+      :ratio="currentProduction / (currentProduction + currentConsumption) || 0.5">
     </prod-consumption-ratio>
   </div>
   <div class="tile is-parent">
@@ -28,9 +28,9 @@
   <div class="tile is-parent">
     <chart 
       class="tile is-child box"
-      :currentStorage="180.9"
-      :currentLevel="60"
-      :autonomy="5.40">
+      :currentStorage="currentStorage"
+      :currentLevel="currentLevel"
+      :autonomy="autonomy">
     </chart>
   </div>
 </div>
@@ -38,6 +38,7 @@
 </template>
 
 <script type="text/javascript">
+import { mapGetters } from 'vuex';
 import EnergyDistribution from './EnergyDistribution';
 import ProdConsumptionRatio from './ProdConsumptionRatio';
 import Chart from './Chart';
@@ -50,42 +51,19 @@ export default {
   },
   data() {
     return {
-      productionDistribution: [
-        {
-          name: 'Solar',
-          percentage: 32,
-          color: 'green',
-        },
-        {
-          name: 'Hydroelectric',
-          percentage: 30,
-          color: 'red',
-        },
-        {
-          name: 'Biomass',
-          percentage: 20,
-          color: 'purple',
-        },
-        {
-          name: 'Nuclear',
-          percentage: 6,
-          color: 'green',
-        },
-        {
-          name: 'Geothermal',
-          percentage: 6,
-          color: 'red',
-        },
-        {
-          name: 'Gas',
-          percentage: 6,
-          color: 'purple',
-        },
-      ],
-      currentProduction: 33.3,
-      consumptionDistribution: [],
-      currentConsumption: 66.6,
     };
+  },
+  computed: {
+    // mix the getters into computed with object spread operator
+    ...mapGetters({
+      currentProduction: 'getTotalPowerPlantProduction',
+      currentConsumption: 'getTotalPowerPlantConsumption',
+      currentStorage: 'getCurrentStoredQuantity',
+      currentLevel: 'getCurrentStorageLevel',
+      autonomy: 'getEnergyAutonomy',
+      productionDistribution: 'getProductionDistribution',
+      consumptionDistribution: 'getConsumptionDistribution',
+    }),
   },
 };
 </script>

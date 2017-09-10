@@ -13,4 +13,5 @@ public interface PowerPlantRepository extends ReactiveMongoRepository<PowerPlant
 
     Flux<PowerPlant> findByOwner (String owner);
     Mono<PowerPlant> findByIdAndOwner (String id, String owner);
+    Mono<PowerPlant> findByOwnerAndName (String owner, String name);
 }

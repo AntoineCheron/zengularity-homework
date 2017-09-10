@@ -30,16 +30,16 @@ export default {
   },
   computed: {
     time() {
-      return moment(this.news.timestamp).calendar();
+      return moment(this.news.timestamp * 1000).calendar();
     },
     colors() {
       return {
-        badge: this.news.state === 'producing' ? 'green-badge' : 'red-badge',
-        consumption: this.news.state === 'producing' ? 'red-text' : 'green-text',
+        badge: this.news.producing ? 'green-badge' : 'red-badge',
+        consumption: this.news.producing ? 'red-text' : 'green-text',
       };
     },
     iconDirection() {
-      return this.news.state === 'producing' ? 'up' : 'down';
+      return this.news.producing ? 'up' : 'down';
     },
   },
 };

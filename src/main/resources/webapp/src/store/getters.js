@@ -1,7 +1,7 @@
 export const allPowerPlants = state => state.powerplants;
 
 export const getPowerPlant = state => id =>
-  state.powerplants.find(powerplant => powerplant.id === id);
+  state.powerplants.find(powerplant => powerplant.powerPlantId === id);
 
 export const getProducingPowerPlant = state =>
   state.powerplants.filter(powerplant => powerplant.producing);
@@ -9,28 +9,56 @@ export const getProducingPowerPlant = state =>
 export const getConsumingPowerPlant = state =>
   state.powerplants.filter(powerplant => !powerplant.producing);
 
+export const getPowerPlantCurrentConsumption = (state, getters) => (powerPlant) => {
+  let res;
+
+  if (!powerPlant.producing) {
+    const type = getters.getType(powerPlant.type);
+    res = powerPlant.capacity * (type.percentageConsumedPerHour / 100);
+  } else {
+    res = 0;
+  }
+
+  return res;
+};
+
 export const getTotalPowerPlantConsumption = (state, getters) => {
-  const consumingPowerplants = getters.getConsumingPowerPlant();
+  const consumingPowerplants = getters.getConsumingPowerPlant;
   let cons = 0;
   for (let i = 0; i < consumingPowerplants.length; i += 1) {
-    const type = getters.getType(consumingPowerplants[i]);
-    if (consumingPowerplants[i].capacity > 0) {
-      cons += consumingPowerplants[i].capacity * type.percentageConsumedPerHour;
+    const charge = getters
+      .getPowerPlantCurrentStoragePercentage(consumingPowerplants[i].powerPlantId);
+    if (charge > 0) {
+      cons += getters.getPowerPlantCurrentConsumption(consumingPowerplants[i]);
     }
   }
   return cons;
 };
 
+export const getPowerPlantCurrentProduction = (state, getters) => (powerPlant) => {
+  let res;
+
+  if (powerPlant.producing) {
+    const type = getters.getType(powerPlant.type);
+    res = powerPlant.capacity * (type.percentageProducedPerHour / 100);
+  } else {
+    res = 0;
+  }
+
+  return res;
+};
+
 export const getTotalPowerPlantProduction = (state, getters) => {
-  const producingPowerPlants = getters.getProducingPowerPlant();
-  let cons = 0;
+  const producingPowerPlants = getters.getProducingPowerPlant;
+  let prod = 0;
   for (let i = 0; i < producingPowerPlants.length; i += 1) {
-    const type = getters.getType(producingPowerPlants[i]);
-    if (producingPowerPlants[i].capacity < 100) {
-      cons += producingPowerPlants[i].capacity * type.percentageProducedPerHour;
+    const charge = getters
+      .getPowerPlantCurrentStoragePercentage(producingPowerPlants[i].powerPlantId);
+    if (charge < 100) {
+      prod += getters.getPowerPlantCurrentProduction(producingPowerPlants[i]);
     }
   }
-  return cons;
+  return prod;
 };
 
 export const getCurrentStoredQuantity = (state, getters) => {
@@ -44,20 +72,38 @@ export const getCurrentStoredQuantity = (state, getters) => {
 export const getPowerPlantCurrentStorage = (state, getters) => (id) => {
   const powerPlant = getters.getPowerPlant(id);
 
-  const currentStoragePercentage = getters.getPowerPlantCurrentStoragePercentage(id);
+  const currentStoragePercentage = getters.getPowerPlantCurrentStoragePercentage(id) / 100;
   return currentStoragePercentage * powerPlant.capacity;
 };
 
 export const getPowerPlantCurrentStoragePercentage = (state, getters) => (id) => {
-  const powerPlant = getters.getPowerPlant(id);
-  const lastEvent = getters.getPowerPlantEvents(id)[0];
-  // ^ TODO : verify that this is the first one and not the last one
-  const type = getters.getType(powerPlant.type);
+  let res;
 
-  const currentTimestamp = Math.floor(Date.now() / 1000);
-  const productionRate = powerPlant.producing ?
-    type.percentageProducedPerHour : (-type.percentageConsumedPerHour);
-  return lastEvent.powerPlantCharge + ((currentTimestamp - lastEvent.timestamp) * productionRate);
+  const powerPlant = getters.getPowerPlant(id);
+  const events = getters.getPowerPlantEvents(id);
+  const lastEvent = events[events.length - 1];
+
+  if (lastEvent) {
+    const type = getters.getType(powerPlant.type);
+
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const productionRate = powerPlant.producing ?
+      type.percentageProducedPerHour / 3600 : (-type.percentageConsumedPerHour) / 3600;
+
+    res = parseInt(
+      lastEvent.powerPlantCharge + ((currentTimestamp - lastEvent.timestamp) * productionRate),
+      10);
+  } else {
+    res = 0;
+  }
+
+  if (res < 0) {
+    res = 0;
+  } else if (res > 100) {
+    res = 100;
+  }
+
+  return res;
 };
 
 export const getCurrentStorageLevel = (state, getters) => {
@@ -71,40 +117,87 @@ export const getCurrentStorageLevel = (state, getters) => {
     div += powerplant.capacity;
   }
 
-  return num / div;
+  return div > 0 ? (num / div).toFixed(2) : 0;
 };
 
 export const getEnergyAutonomy = (state, getters) => {
-  const consumption = getters.getTotalPowerPlantConsumption();
-  const production = getters.getTotalPowerPlantProduction();
+  const consumption = getters.getTotalPowerPlantConsumption;
+  const production = getters.getTotalPowerPlantProduction;
 
   const currentStorageDecreasing = consumption - production;
-  const currentStorage = getters.getCurrentStoredQuantity();
+  const currentStorage = getters.getCurrentStoredQuantity;
 
   const nonFormattedAutonomy = currentStorage / currentStorageDecreasing;
   const hours = parseInt(nonFormattedAutonomy, 10);
   const minutes = (nonFormattedAutonomy % hours) * 0.6;
-  return (hours + minutes).toFixed(2);
+  return currentStorageDecreasing > 0 ? (hours + minutes).toFixed(2) : 'Inf';
 };
 
-export const getType = state => name => state.types.filter(type => type.name === name);
+export const getType = state => name => state.types.filter(type => type.name === name)[0];
 
 export const getPowerPlantEvents = state => id =>
-  state.event.filter(event => event.owningPowerPlant === id);
+  state.events.filter(event => event.owningPowerPlant === id);
+
+export const getProductionDistribution = (state, getters) => {
+  const producingPowerPlants = getters.getProducingPowerPlant;
+  const types = state.types;
+  const res = {};
+
+  for (let i = 0; i < types.length; i += 1) {
+    res[types[i].name] = 0;
+  }
+
+  for (let i = 0; i < producingPowerPlants.length; i += 1) {
+    const powerPlant = producingPowerPlants[i];
+    res[powerPlant.type] += getters.getPowerPlantCurrentProduction(powerPlant);
+  }
+
+  return res;
+};
+
+export const getConsumptionDistribution = (state, getters) => {
+  const consumingPowerPlants = getters.getConsumingPowerPlant;
+  const types = state.types;
+  const res = {};
+
+  for (let i = 0; i < types.length; i += 1) {
+    res[types[i].name] = 0;
+  }
+
+  for (let i = 0; i < consumingPowerPlants.length; i += 1) {
+    const powerPlant = consumingPowerPlants[i];
+    res[powerPlant.type] += getters.getPowerPlantCurrentConsumption(powerPlant);
+  }
+
+  return res;
+};
 
 export const getNewsfeedEvents = (state, getters) =>
   state.events.map((event) => {
     const powerplant = getters.getPowerPlant(event.owningPowerPlant);
-    const storageQuantity = powerplant.capacity * (event.powerPlantCharge / 100);
-    const previousEvent = state.events[state.event.indexOf(event) + 1];
-    const absChargeDifference = Math.abs(previousEvent.powerPlantCharge - event.powerPlantCharge);
 
-    return {
-      powerPlant: powerplant.name,
-      producing: event.producing,
-      lastPeriod: absChargeDifference * powerplant.capacity,
-      powerPlantCharge: event.powerPlantCharge,
-      storageQuantity: event.powerPlantCharge * powerplant.capacity,
-      timestamp: event.timestamp,
-    };
-  });
+    let res;
+    if (powerplant) {
+      const storageQuantity = powerplant.capacity * (event.powerPlantCharge / 100);
+      const previousEvent = state.events[state.events.indexOf(event) + 1];
+      let absChargeDifference;
+      if (previousEvent) {
+        absChargeDifference = Math.abs(previousEvent.powerPlantCharge - event.powerPlantCharge);
+      } else {
+        absChargeDifference = 0;
+      }
+
+      res = {
+        powerPlant: powerplant.name,
+        producing: event.producing,
+        lastPeriod: absChargeDifference * powerplant.capacity,
+        powerPlantCharge: event.powerPlantCharge,
+        storageQuantity: event.powerPlantCharge * powerplant.capacity,
+        timestamp: event.timestamp,
+      };
+    } else {
+      res = event;
+    }
+
+    return res;
+  }).reverse();

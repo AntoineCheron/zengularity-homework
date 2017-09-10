@@ -36,7 +36,8 @@
       <!-- Autonomy data -->
       <div class="single-data last">
         <p class="upper-text">In the current configuration, you will stay autonomous for another</p>
-        <p><span class="big-number yellow-text">{{ parseInt(autonomy) }}:{{ parseInt((autonomy - parseInt(autonomy)) * 60) }}</span><span class="unit">min</span></p>
+        <p v-if="autonomy !== 'Inf'"><span class="big-number yellow-text">{{ parseInt(autonomy) }}:{{ parseInt((autonomy - parseInt(autonomy)) * 60) }}</span><span class="unit">min</span></p>
+        <p v-else><span class="big-number yellow-text">Forever</span></p>
       </div>
     </div>
   </div>
@@ -47,12 +48,12 @@
 import HighchartsOptions from '../assets/json/highcharts-options';
 
 export default {
-  props: {
-    data: Object,
-    currentStorage: Number,
-    currentLevel: Number,
-    autonomy: Number,
-  },
+  props: [
+    'data',
+    'currentStorage',
+    'currentLevel',
+    'autonomy',
+  ],
   data() {
     return {
       selectedPeriod: 'week',

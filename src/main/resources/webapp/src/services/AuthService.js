@@ -5,7 +5,7 @@ import sha256 from 'js-sha256';
 const AuthService = {
   // Attributes
   connectedUser: undefined,
-  BASE_URL: document.location.origin,
+  BASE_URL: document.location.origin.replace('8080', '8888'),
 
   publicRoutes: ['/login', '/register', '/forgot'],
 

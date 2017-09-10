@@ -5,3 +5,9 @@ export const REMOVE_POWER_PLANT = 'REMOVE_POWER_PLANT';
 export const TURN_PRODUCTION_ON = 'TURN_PRODUCTION_ON';
 
 export const TURN_PRODUCTION_OFF = 'TURN_PRODUCTION_OFF';
+
+export const SET_TYPES = 'SET_TYPES';
+
+export const SET_EVENTS = 'SET_EVENTS';
+
+export const SET_POWER_PLANTS = 'SET_POWER_PLANTS';

@@ -20,9 +20,9 @@
     </svg>
     </div>
   </div>
-  <h2 v-if="ratio > 1" class="production-label green-text">Producing !</h2>
-  <h2 v-if="ratio < 1" class="production-label red-text">Consuming !</h2>
-  <h2 v-if="ratio === 1" class="production-label purple-text">Balanced !</h2>
+  <h2 v-if="ratio > 0.5" class="production-label green-text">Producing !</h2>
+  <h2 v-if="ratio < 0.5" class="production-label red-text">Consuming !</h2>
+  <h2 v-if="ratio === 0.5" class="production-label purple-text">Balanced !</h2>
 </div>
 </template>
 

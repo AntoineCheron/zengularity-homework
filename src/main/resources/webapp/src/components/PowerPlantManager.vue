@@ -78,17 +78,17 @@
               </tr>
               <tr v-for="pp in filteredPowerPlantsArray">
                 <td>{{ pp.name }}</td>
-                <td>{{ pp.nature }}</td> 
+                <td>{{ pp.type }}</td> 
                 <td>{{ pp.capacity }}</td>
                 <td class="state-td">
-                  <span class="icon is-small" v-if="pp.state === 'producing'"><i class="fa fa-arrow-up green-text"></i></span>
-                  <span class="icon is-small" v-if="pp.state === 'consuming'"><i class="fa fa-arrow-down red-text"></i></span>
+                  <span class="icon is-small" v-if="pp.producing"><i class="fa fa-arrow-up green-text"></i></span>
+                  <span class="icon is-small" v-if="!pp.producing"><i class="fa fa-arrow-down red-text"></i></span>
                 </td>
                 <td>{{ pp.storage }}%</td>
                 <td class="buttons">
                   <button @click="remove(pp)" class="remove-button"><span class="icon is-small"><i class="fa fa-trash purple-text"></i></span> remove</button>
-                  <button class="prodButton" @click="turnProductionOff(pp)" v-if="pp.state === 'producing'"><span class="icon is-small"><i class="fa fa-stop-circle red-text"></i></span> Turn production off</button>
-                  <button class="prodButton" @click="turnProductionOn(pp)" v-if="pp.state === 'consuming'"><span class="icon is-small"><i class="fa fa-play green-text"></i></span> Turn production on</button>
+                  <button class="prodButton" @click="turnProductionOff(pp)" v-if="pp.producing"><span class="icon is-small"><i class="fa fa-stop-circle red-text"></i></span> Turn production off</button>
+                  <button class="prodButton" @click="turnProductionOn(pp)" v-if="!pp.producing"><span class="icon is-small"><i class="fa fa-play green-text"></i></span> Turn production on</button>
                 </td>
               </tr>
             </table>
@@ -100,6 +100,8 @@
 </template>
 
 <script type="text/javascript">
+import { mapState } from 'vuex';
+
 export default {
   data() {
     return {
@@ -107,52 +109,18 @@ export default {
       sortBy: 'capacityDown',
       productionState: 'both',
       nature: 'all',
-      powerPlants: [
-        {
-          name: 'Nuclear 1',
-          nature: 'Nuclear',
-          capacity: 78000,
-          state: 'producing',
-          storage: '23',
-        },
-        {
-          name: 'Alpha 1',
-          nature: 'Nuclear',
-          capacity: 78000,
-          state: 'producing',
-          storage: '23',
-        },
-        {
-          name: 'alpha 2',
-          nature: 'Nuclear',
-          capacity: 78000,
-          state: 'consuming',
-          storage: '23',
-        },
-        {
-          name: 'Home\'s roof',
-          nature: 'Solar',
-          capacity: 200,
-          state: 'consuming',
-          storage: '98',
-        },
-      ],
     };
   },
-  methods: {
-    remove(powerPlant) {
-      // TODO
-    },
-    turnProductionOff(powerPlant) {
-      // TODO
-    },
-    turnProductionOn(powerPlant) {
-      // TODO
-    },
-  },
   computed: {
+    powerplants() {
+      return this.$store.state.powerplants.map((powerplant) => {
+        powerplant.storage = this.$store.getters
+          .getPowerPlantCurrentStoragePercentage(powerplant.powerPlantId);
+        return powerplant;
+      });
+    },
     filteredPowerPlantsArray() {
-      return this.powerPlants
+      return this.powerplants
         // Apply the Search By Name filter
         .filter(powerPlant => powerPlant.name.toLowerCase()
           .includes(this.searchByName.toLowerCase()))
@@ -171,6 +139,19 @@ export default {
           else if (this.sortBy === 'storage') res = a.storage < b.storage;
           return res;
         });
+    },
+  },
+  methods: {
+    remove(powerPlant) {
+      if (confirm(`Are you sure you want to delete powerplant ${powerPlant.name}`)) {
+        this.$store.dispatch('removePowerPlant', powerPlant);
+      }
+    },
+    turnProductionOff(powerPlant) {
+      this.$store.dispatch('turnProductionOff', powerPlant);
+    },
+    turnProductionOn(powerPlant) {
+      this.$store.dispatch('turnProductionOn', powerPlant);
     },
   },
 };

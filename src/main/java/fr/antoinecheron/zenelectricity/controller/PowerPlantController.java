@@ -9,10 +9,7 @@ import fr.antoinecheron.zenelectricity.repository.ProductionEventRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -137,8 +134,22 @@ public class PowerPlantController extends ControllerHelper {
         // Save the newly created powerplant
         powerPlantRepository.save(powerPlant).subscribe();
 
-        // Returns the newly created powerplant
-        return new ResponseEntity<>(Mono.just(powerPlant), HttpStatus.OK);
+        // Retrieve it to get its id
+        PowerPlant p = powerPlantRepository.findByOwnerAndName(powerPlant.getOwner(), powerPlant.getName()).block();
+
+        if (p != null) {
+            // Create the first production event
+            ProductionEvent firstEvent = new ProductionEvent(true, p.getPowerPlantId());
+            firstEvent.setPowerPlantCharge(0);
+
+            // Store this event into the db
+            productionEventRepository.save(firstEvent).subscribe();
+
+            // Returns the newly created powerplant
+            return new ResponseEntity<>(Mono.just(p), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(Mono.empty(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     /* -----------------------------------------------------------------------------------------------------------------
@@ -162,36 +173,36 @@ public class PowerPlantController extends ControllerHelper {
 
         // Retrieve other data needed for the computation
         long currentTimestamp = System.currentTimeMillis() / 1000L;
-        PowerPlantType type = PowerPlantType.valueOf(oldPowerPlant.getType());
+        PowerPlantType type = PowerPlantType.valueOf(oldPowerPlant.getType().toUpperCase());
 
         // Pre-computation, timestamps are seconds
-        double hours = (previous.getTimestamp() - currentTimestamp) / 3600;
+        long seconds = currentTimestamp - previous.getTimestamp();
 
         // Compute the current charge
         if (previous.isProducing()) {
-            return computeChargeAfterProduction(previous, type.getPercentageProducedPerHour(), hours, oldPowerPlant);
+            return computeChargeAfterProduction(previous, type.getPercentageProducedPerHour(), seconds, oldPowerPlant);
         } else {
-            return computeChargeAfterConsumption(previous, type.getPercentageConsumedPerHour(), hours, oldPowerPlant);
+            return computeChargeAfterConsumption(previous, type.getPercentageConsumedPerHour(), seconds, oldPowerPlant);
         }
     }
 
-    private int computeChargeAfterProduction (ProductionEvent previous, double productionRatePerHour, double hours,
+    private int computeChargeAfterProduction (ProductionEvent previous, double productionRatePerHour, long seconds,
                                               PowerPlant srcPowerPlant) {
-        return computeCharge(true, previous, productionRatePerHour, hours, srcPowerPlant);
+        return computeCharge(true, previous, productionRatePerHour, seconds, srcPowerPlant);
     }
 
-    private int computeChargeAfterConsumption (ProductionEvent previous, double consumptionRatePerHour, double hours,
+    private int computeChargeAfterConsumption (ProductionEvent previous, double consumptionRatePerHour, long seconds,
                                                PowerPlant srcPowerPlant) {
 
 
-        return computeCharge(false, previous, consumptionRatePerHour, hours, srcPowerPlant);
+        return computeCharge(false, previous, consumptionRatePerHour, seconds, srcPowerPlant);
     }
 
     private int computeCharge (boolean isProductionCharge, ProductionEvent previous,
-                               double ratePerHour, double hours, PowerPlant srcPowerPlant) {
+                               double ratePerHour, long seconds, PowerPlant srcPowerPlant) {
 
         // Compute the charge
-        Double chargeAsDouble = previous.getPowerPlantCharge() - (hours * ratePerHour);
+        Double chargeAsDouble = previous.getPowerPlantCharge() - (seconds * (ratePerHour / 3600));
         int charge = chargeAsDouble.intValue();
 
         // Then verify that it is not over 100 or 0, depending on the production state represented by the boolean

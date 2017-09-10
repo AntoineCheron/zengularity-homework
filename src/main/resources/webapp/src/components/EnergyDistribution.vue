@@ -2,10 +2,10 @@
 <div class="energy-distribution">
   <h2 class="dashboard-card-title top">{{ type }} distribution</h2>
   <div class="middle">
-    <div v-if="distribution.length !== 0" v-for="el in distribution" class="single-el-percentage">
+    <div v-if="distribution.length !== 0" v-for="el in distributionFormatted" class="single-el-percentage">
       <p :style="{ 'min-width': distributionLabelWidth*5.6 + 'px' }">{{ el.name }}</p>
       <progress class="progress" :class="el.color" :value="el.percentage" max="100"></progress>
-      <p class="percentage">{{ el.percentage }}%</p>
+      <p class="percentage">{{ el.percentage.toFixed(0) }}%</p>
     </div>
     <p v-if="distribution.length === 0" style="text-align: center">No data available</p>
   </div>
@@ -18,36 +18,59 @@
 </template>
 
 <script type="text/javascript">
-  export default {
-    props: {
-      producing: Boolean,
-      distribution: Array,
-      current: Number,
+import ColorService from '@/services/ColorService';
+
+export default {
+  props: {
+    producing: Boolean,
+    distribution: Object,
+    current: Number,
+  },
+  computed: {
+    type() {
+      return this.producing ? 'production' : 'consumption';
     },
-    computed: {
-      type() {
-        return this.producing ? 'production' : 'consumption';
-      },
-      actionType() {
-        return this.producing ? 'producing' : 'consuming';
-      },
-      currentColorClass() {
-        return this.producing ? 'green-text' : 'red-text';
-      },
-      distributionLabelWidth() {
-        let max = 0;
-        for (let i = 0; i < this.distribution.length; i += 1) {
-          max = this.distribution[i].name.length > max ? this.distribution[i].name.length : max;
-        }
-        return max;
-      },
+    actionType() {
+      return this.producing ? 'producing' : 'consuming';
     },
-    data() {
-      return {
-        unit: 'kWh',
-      };
+    currentColorClass() {
+      return this.producing ? 'green-text' : 'red-text';
     },
-  };
+    distributionLabelWidth() {
+      let max = 0;
+      for (let i = 0; i < this.distributionFormatted.length; i += 1) {
+        const el = this.distributionFormatted[i];
+        max = el.name.length > max ? el.name.length : max;
+      }
+      return max;
+    },
+    distributionFormatted() {
+      const res = [];
+      let total = 0;
+
+      Object.keys(this.distribution).forEach((key) => {
+        total += this.distribution[key];
+      });
+
+      if (total === 0) total = 1;
+
+      Object.keys(this.distribution).forEach((key) => {
+        res.push({
+          name: key,
+          percentage: (this.distribution[key] / total) * 100,
+          color: ColorService.getColor(key),
+        });
+      });
+
+      return res;
+    },
+  },
+  data() {
+    return {
+      unit: 'kWh',
+    };
+  },
+};
 </script>
 
 <style lang="scss" scoped>

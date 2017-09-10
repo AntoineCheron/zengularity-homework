@@ -39,5 +39,6 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     // remove no-param-reassign exceptions because they create a conflict against Vuex design
     'no-param-reassign': 0,
+    'no-use-before-define': 0,
   }
 }
