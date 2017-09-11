@@ -57,8 +57,14 @@ export default {
   data() {
     return {
       selectedPeriod: 'week',
-      options: HighchartsOptions.week,
     };
+  },
+  computed: {
+    options() {
+      const opt = HighchartsOptions.week;
+      opt.series[0].data = this.$store.getters.getProductionHistory;
+      return opt;
+    },
   },
   methods: {
     selectPeriod(period) {

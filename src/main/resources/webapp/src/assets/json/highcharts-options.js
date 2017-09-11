@@ -25,7 +25,7 @@ export default {
       max: 100,
     },
     series: [{
-      data: [20, 10, 6, 44, 21, 60, 27, 20, 10, 6, 44, 21, 60, 27],
+      data: [],
       color: '#42B975',
       name: 'Energy storage',
     }],

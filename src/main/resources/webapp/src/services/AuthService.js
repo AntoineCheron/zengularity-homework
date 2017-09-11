@@ -37,6 +37,7 @@ const AuthService = {
     // Do the connexion request
     axios.post(`${this.BASE_URL}/login`, data)
     .then((response) => {
+      console.log(response);
       if (response.status === 200) {
         // If connexion succes, store the User object and redirect to the asked page
         this.connectedUser = new User(formData.username, response.headers.authorization);

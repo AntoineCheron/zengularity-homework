@@ -119,6 +119,7 @@
 
 <script>
   import AuthService from '@/services/AuthService';
+  import axios from '@/api/AxiosConfig';
 
   export default {
     props: ['mode'],
@@ -153,6 +154,7 @@
         const redirectTo = this.$route.query.redirectTo ? this.$route.query.redirectTo : '/home';
         this.$router.push(redirectTo);
         this.emptyFields();
+        console.log(axios);
       },
       forgot() {
         // TODO
