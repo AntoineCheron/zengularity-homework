@@ -202,7 +202,13 @@ public class PowerPlantController extends ControllerHelper {
                                double ratePerHour, long seconds, PowerPlant srcPowerPlant) {
 
         // Compute the charge
-        Double chargeAsDouble = previous.getPowerPlantCharge() - (seconds * (ratePerHour / 3600));
+        Double chargeAsDouble;
+        if (isProductionCharge) {
+            chargeAsDouble = previous.getPowerPlantCharge() + (seconds * (ratePerHour / 3600));
+        } else {
+            chargeAsDouble = previous.getPowerPlantCharge() - (seconds * (ratePerHour / 3600));
+        }
+
         int charge = chargeAsDouble.intValue();
 
         // Then verify that it is not over 100 or 0, depending on the production state represented by the boolean
