@@ -24,6 +24,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
  */
 
 @RestController
+@CrossOrigin
 @RequestMapping(value="/API/powerplants")
 public class PowerPlantController extends ControllerHelper {
 

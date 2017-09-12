@@ -3,15 +3,13 @@ package fr.antoinecheron.zenelectricity.controller;
 import fr.antoinecheron.zenelectricity.domain.ApplicationUser;
 import fr.antoinecheron.zenelectricity.repository.ApplicationUserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by antoine on 02/09/2017.
  */
 @RestController
+@CrossOrigin
 public class UserController {
 
     private ApplicationUserRepository applicationUserRepository;

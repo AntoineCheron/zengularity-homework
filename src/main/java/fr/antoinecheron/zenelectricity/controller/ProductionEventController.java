@@ -8,6 +8,7 @@ import fr.antoinecheron.zenelectricity.repository.ProductionEventRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  * Created by antoine on 05/09/2017.
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/API/powerplants/events")
 public class ProductionEventController extends ControllerHelper {
 
