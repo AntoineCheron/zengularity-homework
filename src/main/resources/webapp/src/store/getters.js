@@ -149,7 +149,11 @@ export const getProductionDistribution = (state, getters) => {
 
   for (let i = 0; i < producingPowerPlants.length; i += 1) {
     const powerPlant = producingPowerPlants[i];
-    res[powerPlant.type] += getters.getPowerPlantCurrentProduction(powerPlant);
+    const id = powerPlant.powerPlantId;
+    const powerPlantCharge = getters.getPowerPlantCurrentStoragePercentage(id);
+    if (powerPlantCharge < 100) {
+      res[powerPlant.type] += getters.getPowerPlantCurrentProduction(powerPlant);
+    }
   }
 
   return res;
@@ -166,7 +170,11 @@ export const getConsumptionDistribution = (state, getters) => {
 
   for (let i = 0; i < consumingPowerPlants.length; i += 1) {
     const powerPlant = consumingPowerPlants[i];
-    res[powerPlant.type] += getters.getPowerPlantCurrentConsumption(powerPlant);
+    const id = powerPlant.powerPlantId;
+    const powerPlantCharge = getters.getPowerPlantCurrentStoragePercentage(id);
+    if (powerPlantCharge > 0) {
+      res[powerPlant.type] += getters.getPowerPlantCurrentConsumption(powerPlant);
+    }
   }
 
   return res;
@@ -181,7 +189,6 @@ export const getNewsfeedEvents = (state, getters) =>
     if (powerplant) {
       const storageQuantity = powerplant.capacity * (event.powerPlantCharge / 100);
       const previousEvent = powerPlantEvents[powerPlantEvents.indexOf(event) + 1];
-      console.log(previousEvent);
       let absChargeDifference;
       if (previousEvent) {
         absChargeDifference = Math.abs(previousEvent.powerPlantCharge - event.powerPlantCharge);
@@ -208,101 +215,126 @@ export const getProductionHistory = (state, getters) => {
   const powerplants = state.powerplants;
   const res = [];
 
-  // For the first powerplant, we simply add each {timestamp, charge} couple
-  // into the resulting array
-  const firstPowerPlantEvents = getters.getPowerPlantEvents(powerplants[0]);
-  firstPowerPlantEvents.forEach((event) => {
-    const charge = event.powerPlantCharge * powerplants[0].capacity;
-    res.push([event.timestamp, charge]);
-  });
+  if (powerplants && powerplants.length > 0) {
+    // For the first powerplant, we simply add each {timestamp, production} couple
+    // into the resulting array
+    const firstPPEvents = getters.getPowerPlantEvents(powerplants[0].powerPlantId);
+    const fstPPType = getters.getType(powerplants[0].type);
 
-  // Then, for all the other powerplants, we need to do a few computations
-  for (let i = 1; i < powerplants.length; i += 1) {
-    const powerPlant = powerplants[i];
-    const events = getters.getPowerPlantEvents(powerPlant.powerPlantId);
-    const history = [];
-
-    // First build the history for the currently selected powerplant
-    events.forEach((event) => {
-      const charge = event.powerPlantCharge * powerplants[i].capacity;
-      history.push([event.timestamp, charge]);
-    });
-
-    // Then, starting with the second point of the history, go through each point of history and
-    // retrieve all the points of res that are between the currently studied point and its
-    // previous point.
-    // For each of those points, adds the studied powerplant's charge at the time of the point.
-    for (let j = 1; j < history.length; j += 1) {
-      const previousPointTimestamp = history[j - 1][0];
-      const thisTimestamp = history[j][0];
-      const pointsInTheInterval = res
-        .filter(point => point[0] > previousPointTimestamp && point[0] < thisTimestamp);
-
-      pointsInTheInterval.forEach((point) => {
-        const indexInRes = res.indexOf(point);
-        const newValue = point[1] + chargeAt(history, point[0], powerPlant.powerPlantId, getters);
-
-        res[indexInRes][1] = newValue;
-      });
-
-      // As the final step for a specific point from history,
-      // Store its data into the res
-      const lastPointInInterval = pointsInTheInterval[pointsInTheInterval.length - 1];
-      const indexToAddInRes = res.indexOf(lastPointInInterval) + 1;
-
-      const value = history[1] + chargeAt(
-          res,
-          history[0],
-          getPowerPlantIdFromNextTimestamp(res, history[0], state),
-          getters);
-      const point = [history[0], value];
-
-      res.splice(indexToAddInRes, 0, point);
+    for (let i = 0; i < firstPPEvents.length - 1; i += 1) {
+      const event = firstPPEvents[i];
+      const nextEvent = firstPPEvents[i + 1];
+      const prod = computePowerPlantProductionAtEvent(powerplants[0], event, nextEvent, fstPPType);
+      if (typeof prod === 'number') {
+        res.push([event.timestamp, prod]);
+      } else {
+        res.push([event.timestamp, 0]);
+        res.push([prod.timestamp, 0]);
+      }
     }
+
+    // Then, for all the other powerplants, we need to do a few computations
+    for (let i = 1; i < powerplants.length; i += 1) {
+      const powerPlant = powerplants[i];
+      const events = getters.getPowerPlantEvents(powerPlant.powerPlantId);
+      const type = getters.getType(powerPlant.type);
+      const history = [];
+
+      // First build the history for the currently selected powerplant
+      for (let j = 0; j < events.length - 1; j += 1) {
+        const event = events[j];
+        const nextEvent = events[j + 1];
+        const prod = computePowerPlantProductionAtEvent(powerPlant, event, nextEvent, type);
+        if (typeof prod === 'number') {
+          history.push([event.timestamp, prod]);
+        } else {
+          history.push([event.timestamp, 0]);
+          history.push([prod.timestamp, 0]);
+        }
+      }
+
+      if (history.length > 0) {
+        // Add a point in res on the creation of powerplant. After it,
+        // the production will increase.
+        let closerPoint = res.filter(r => r[0] < history[0][0]);
+        closerPoint = closerPoint[closerPoint.length - 1];
+        const indexOfClosePoint = res.indexOf(closerPoint);
+        res.splice(indexOfClosePoint + 1, 0, [history[0][0], closerPoint[1]]);
+      }
+
+      // Then, starting with the second point of the history, go through each point of history and
+      // retrieve all the points of res that are between the currently studied point and its
+      // previous point.
+      // For each of those points, adds the studied powerplant's prod at the time of the point.
+      for (let j = 1; j < history.length; j += 1) {
+        const previousPointTimestamp = history[j - 1][0];
+        const thisTimestamp = history[j][0];
+        const pointsInTheInterval = res
+          .filter(point => point[0] >= previousPointTimestamp && point[0] < thisTimestamp);
+
+        pointsInTheInterval.forEach((point) => {
+          const indexInRes = res.indexOf(point);
+          const newValue = point[1] + history[j - 1][1];
+          res[indexInRes][1] = newValue;
+        });
+
+        // As the final step for a specific point from history, compute its prod
+        // plus the current prod in res. Then store this data into the res array
+        const lastPointInInterval = pointsInTheInterval[pointsInTheInterval.length - 1];
+        let indexToAddInRes = res.indexOf(lastPointInInterval) + 1;
+        if (indexToAddInRes === 0 && res.filter(r => r[0] < history[j][0]).length > 0) {
+          indexToAddInRes = res.length;
+        }
+
+        let value;
+        if (lastPointInInterval) {
+          value = history[j][1] + lastPointInInterval[1];
+        } else {
+          value = history[j][1];
+        }
+        const point = [history[j][0], value];
+        res.splice(indexToAddInRes, 0, point);
+      }
+    }
+
+    // Add the current prod at the end of the res array
+    const currentProd =
+      getters.getTotalPowerPlantProduction
+      - getters.getTotalPowerPlantConsumption;
+    const point = [Math.floor(Date.now() / 1000), currentProd];
+    res.push(point);
   }
 
   // Finally return the resulting array
-  return res;
+  return res.map(r => [r[0] * 1000, r[1]]);
 };
 
 
 // PRIVATE METHODS
 
-const chargeAt = (source, timestamp, powerPlantId, getters) => {
+const computePowerPlantProductionAtEvent = (powerplant, event, nextEvent, type) => {
   let res;
 
-  for (let i = 0; i < source.length; i += 1) {
-    if (source[i].timestamp > timestamp && i > 0) {
-      const previousPoint = source[i - 1];
-      const nextPoint = source[i];
-      // point[0] is the timestamp ; point[1] is the charge
-      const num = (previousPoint[0] * previousPoint[1]) + (nextPoint[0] * nextPoint[1]);
-      const denom = previousPoint[0] + nextPoint[0];
-      res = num / denom;
-    } else if (i === 0) {
-      res = 0;
+  if (nextEvent.powerPlantCharge && event.powerPlantCharge !== nextEvent.powerPlantCharge) {
+    let rate = event.producing ? type.percentageProducedPerHour : -type.percentageConsumedPerHour;
+    rate /= 100;
+
+    const timeBetweenTwoEvents = nextEvent.timestamp - event.timestamp;
+    const charge = (event.powerPlantCharge + (timeBetweenTwoEvents * rate * powerplant.capacity));
+    const isFullAndProducing = event.producing && charge >= 1;
+    const isEmptyAndConsuming = !event.producing && charge <= 0;
+
+    if (isFullAndProducing) {
+      const t = event.timestamp + (((100 - event.powerPlantCharge) / (rate * 100)) * 3600);
+      res = { isFullAndProducing, timestamp: t };
+    } else if (isEmptyAndConsuming) {
+      const t = event.timestamp + (((event.powerPlantCharge) / (-rate * 100)) * 3600);
+      res = { isFullAndProducing, timestamp: t };
+    } else {
+      res = rate * powerplant.capacity;
     }
+  } else {
+    res = event.powerPlantCharge;
   }
-
-  // If the res is undefined, it means that no point in the source is higher than the timestamp,
-  // meaning that this point is the current time. So that, we retrieve the current charge of the
-  // powerplant.
-  if (!res) {
-    res = getters.getPowerPlantCurrentStorage(powerPlantId);
-  }
-
-  return res;
-};
-
-const getPowerPlantIdFromNextTimestamp = (array, timestamp, state) => {
-  // First retrieve the timestamp
-  const nextTimestamps = array.filter(el => el[0] > timestamp)
-    .map(el => el[0]);
-  const nextTimestamp = Math.min.apply(null, nextTimestamps);
-
-  // Then get the event
-  const event = state.events.filter(ev => ev.timestamp === nextTimestamp);
-
-  // And finally returns the owning powerplant's id
-  return event.owningPowerPlant;
+  return res; // in kWh
 };

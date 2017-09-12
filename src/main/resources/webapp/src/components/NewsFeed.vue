@@ -21,6 +21,11 @@ export default {
   created() {
     this.fetchData();
   },
+  mounted() {
+    // Set the css height property
+    const height = Math.max((window.innerHeight - 90), 740);
+    document.getElementById('newsfeed').style.height = `${height}px`;
+  },
   methods: {
     fetchData() {
       this.$store.dispatch('fetchAllEvents');
@@ -31,6 +36,8 @@ export default {
 
 <style lang="scss" scoped>
 #newsfeed {
+  overflow-y: scroll;
+
   .category-title {
     margin-bottom: 35px;
   }

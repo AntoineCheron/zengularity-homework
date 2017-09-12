@@ -1,11 +1,11 @@
 import User from '@/models/User';
 import axios from 'axios';
 import sha256 from 'js-sha256';
+import ServerInfo from '@/api/ServerInfo';
 
 const AuthService = {
   // Attributes
   connectedUser: undefined,
-  BASE_URL: document.location.origin.replace('8080', '8888'),
 
   publicRoutes: ['/login', '/register', '/forgot'],
 
@@ -35,7 +35,12 @@ const AuthService = {
     hash.update(data.password);
     data.password = hash.hex();
     // Do the connexion request
-    axios.post(`${this.BASE_URL}/login`, data)
+    axios({
+      method: 'POST',
+      url: `${ServerInfo.BASE_URL}/login`,
+      crossDomain: ServerInfo.isCrossDomain,
+      data,
+    })
     .then((response) => {
       console.log(response);
       if (response.status === 200) {
@@ -64,7 +69,12 @@ const AuthService = {
     data.password = hash.hex();
 
     // Post the new user request
-    axios.post(`${this.BASE_URL}/sign-up`, data)
+    axios({
+      method: 'POST',
+      url: `${ServerInfo.BASE_URL}/sign-up`,
+      crossDomain: ServerInfo.isCrossDomain,
+      data,
+    })
     .then((response) => {
       if (response.status === 200) {
         // If the user has successfully been created, we go to /login

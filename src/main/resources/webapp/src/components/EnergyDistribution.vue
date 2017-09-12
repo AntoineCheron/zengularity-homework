@@ -11,7 +11,7 @@
   </div>
   <div class="bottom single-data last">
     <p class="grey-text upper-text">You are currently {{ actionType }}</p>
-    <p><span class="big-number" :class="currentColorClass">{{ current }}</span><span class="unit"> {{ unit }}</span>
+    <p><span class="big-number" :class="currentColorClass">{{ current.toFixed(0) }}</span><span class="unit"> {{ unit }}</span>
     </p>
   </div>
 </div>

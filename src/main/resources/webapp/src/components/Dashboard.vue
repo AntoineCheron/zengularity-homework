@@ -12,7 +12,7 @@
   <div class="tile is-parent">
     <prod-consumption-ratio 
       class="tile is-child box"
-      :ratio="currentProduction / (currentProduction + currentConsumption) || 0.5">
+      :ratio="ratio">
     </prod-consumption-ratio>
   </div>
   <div class="tile is-parent">
@@ -54,6 +54,17 @@ export default {
     };
   },
   computed: {
+    ratio() {
+      let res;
+
+      if (this.currentConsumption === 0) {
+        res = 1;
+      } else {
+        res = this.currentProduction / (this.currentProduction + this.currentConsumption);
+      }
+
+      return res;
+    },
     // mix the getters into computed with object spread operator
     ...mapGetters({
       currentProduction: 'getTotalPowerPlantProduction',

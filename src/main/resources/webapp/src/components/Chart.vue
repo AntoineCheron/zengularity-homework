@@ -45,11 +45,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import HighchartsOptions from '../assets/json/highcharts-options';
 
 export default {
   props: [
-    'data',
     'currentStorage',
     'currentLevel',
     'autonomy',
@@ -62,14 +62,17 @@ export default {
   computed: {
     options() {
       const opt = HighchartsOptions.week;
-      opt.series[0].data = this.$store.getters.getProductionHistory;
+      opt.series[0].data = this.productionHistory;
       return opt;
     },
+    ...mapGetters({
+      productionHistory: 'getProductionHistory',
+    }),
   },
   methods: {
     selectPeriod(period) {
       this.selectedPeriod = period;
-      // TODO
+      alert('Future feature, for now, all your history is displayed');
     },
     previousPeriod() {
       // TODO

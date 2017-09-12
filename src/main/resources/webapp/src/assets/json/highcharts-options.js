@@ -1,7 +1,7 @@
 export default {
   week: {
     chart: {
-      type: 'areaspline',
+      type: 'line',
       height: '200px',
     },
     legend: {
@@ -21,7 +21,7 @@ export default {
       title: {
         text: null,
       },
-      min: 0,
+      min: -100,
       max: 100,
     },
     series: [{

@@ -119,13 +119,12 @@
 
 <script>
   import AuthService from '@/services/AuthService';
-  import axios from '@/api/AxiosConfig';
 
   export default {
     props: ['mode'],
     data() {
       return {
-        loginTitle: 'Manage Your Electricity.',
+        loginTitle: 'Take Control Over Your Energy.',
         forgotTitle: 'We will help you get your password back !',
         registerTitle: 'Many thanks for joining us !',
         username: '',
@@ -152,9 +151,8 @@
       },
       loginCallback() {
         const redirectTo = this.$route.query.redirectTo ? this.$route.query.redirectTo : '/home';
-        this.$router.push(redirectTo);
+        // this.$router.push(redirectTo);
         this.emptyFields();
-        console.log(axios);
       },
       forgot() {
         // TODO
