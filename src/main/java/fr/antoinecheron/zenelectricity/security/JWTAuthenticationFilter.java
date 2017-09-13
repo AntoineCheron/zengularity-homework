@@ -37,6 +37,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
+
         try {
             ApplicationUser creds = new ObjectMapper()
                     .readValue(req.getInputStream(), ApplicationUser.class);
@@ -63,6 +64,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                             .signWith(SignatureAlgorithm.HS512, SECRET)
                             .compact();
         resp.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        resp.getWriter().print("{ \"authorization\" : \"" + TOKEN_PREFIX + token + "\" }");
     }
 
 }

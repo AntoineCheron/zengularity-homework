@@ -42,10 +42,10 @@ const AuthService = {
       data,
     })
     .then((response) => {
-      console.log(response);
       if (response.status === 200) {
         // If connexion succes, store the User object and redirect to the asked page
-        this.connectedUser = new User(formData.username, response.headers.authorization);
+        const authorization = response.headers.authorization || response.data.authorization;
+        this.connectedUser = new User(formData.username, authorization);
 
         // Store the token in the browser's session storage to avoid reconnexion on reload
         this.storeTokenInBrowsersSessionStorage();
@@ -77,7 +77,6 @@ const AuthService = {
     })
     .then((response) => {
       if (response.status === 200) {
-        // If the user has successfully been created, we go to /login
         successCallback();
       }
     })

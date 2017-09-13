@@ -151,7 +151,7 @@
       },
       loginCallback() {
         const redirectTo = this.$route.query.redirectTo ? this.$route.query.redirectTo : '/home';
-        // this.$router.push(redirectTo);
+        this.$router.push(redirectTo);
         this.emptyFields();
       },
       forgot() {

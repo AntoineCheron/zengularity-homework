@@ -9,12 +9,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum PowerPlantType {
 
     // Possible types
-    HYDROELECTRIC(2, 6),
-    SOLAR(2, 1),
-    WINDMILL(3,3),
-    NUCLEAR(5,5),
-    GAS(5,2),
-    BIOMASS(1, 12);
+    HYDROELECTRIC(20, 60),
+    SOLAR(20, 10),
+    WINDMILL(30,30),
+    NUCLEAR(50,50),
+    GAS(50,20),
+    BIOMASS(10, 80);
 
     private final double percentageConsumedPerHour;
     private final double percentageProducedPerHour;

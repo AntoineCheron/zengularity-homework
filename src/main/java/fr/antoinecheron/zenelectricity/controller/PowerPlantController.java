@@ -241,12 +241,22 @@ public class PowerPlantController extends ControllerHelper {
     private void createOutofboundEvent (ProductionEvent previous, double rate, boolean isPowerPlantProducing,
                                         String powerPlantId) {
         // First we compute the time the charge raised 1000
-        Double timestampDouble = previous.getTimestamp() + (previous.getPowerPlantCharge() / (rate / 3600));
+        Double timestampDouble;
+        if (isPowerPlantProducing) {
+            timestampDouble = previous.getTimestamp() + (((100 - previous.getPowerPlantCharge()) / rate) * 3600);
+        } else {
+            timestampDouble = previous.getTimestamp() + ((previous.getPowerPlantCharge() / rate) * 3600);
+        }
         long timestamp = timestampDouble.longValue();
 
         // Create the new event
         ProductionEvent event = new ProductionEvent(isPowerPlantProducing, powerPlantId);
         event.setTimetstamp(timestamp);
+        if (isPowerPlantProducing) {
+            event.setPowerPlantCharge(100);
+        } else {
+            event.setPowerPlantCharge(0);
+        }
 
         // Store it into the DB
         productionEventRepository.save(event).subscribe();
