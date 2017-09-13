@@ -176,7 +176,6 @@ export const getConsumptionDistribution = (state, getters) => {
       res[powerPlant.type] += getters.getPowerPlantCurrentConsumption(powerPlant);
     }
   }
-
   return res;
 };
 
@@ -188,10 +187,11 @@ export const getNewsfeedEvents = (state, getters) =>
     let res;
     if (powerplant) {
       const storageQuantity = powerplant.capacity * (event.powerPlantCharge / 100);
-      const previousEvent = powerPlantEvents[powerPlantEvents.indexOf(event) + 1];
+      const previousEvent = powerPlantEvents[powerPlantEvents.indexOf(event) - 1];
       let absChargeDifference;
       if (previousEvent) {
         absChargeDifference = Math.abs(previousEvent.powerPlantCharge - event.powerPlantCharge);
+        absChargeDifference /= 100;
       } else {
         absChargeDifference = 0;
       }

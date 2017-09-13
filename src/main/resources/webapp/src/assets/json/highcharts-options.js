@@ -1,7 +1,7 @@
 export default {
   week: {
     chart: {
-      type: 'line',
+      type: 'spline',
       height: '200px',
     },
     legend: {

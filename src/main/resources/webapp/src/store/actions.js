@@ -19,7 +19,9 @@ export const addPowerPlant = (store, powerplant) => {
   PowerPlantApi.addPowerPlant(powerplant,
     (data) => {
       store.commit(types.ADD_POWER_PLANT, data);
-      store.dispatch('fetchAllEvents');
+      setTimeout(() => {
+        store.dispatch('fetchAllEvents');
+      }, 300);
     },
     error => console.error(error));
 };
@@ -30,10 +32,15 @@ export const fetchAllPowerPlants = ({ commit }) => {
     error => console.error(error));
 };
 
-export const removePowerPlant = ({ commit }, powerPlant) => {
+export const removePowerPlant = (store, powerPlant) => {
   PowerPlantApi.deleteOnePowerPlant(
     powerPlant.powerPlantId,
-    data => commit(types.REMOVE_POWER_PLANT, powerPlant),
+    (data) => {
+      store.commit(types.REMOVE_POWER_PLANT, powerPlant);
+      setTimeout(() => {
+        store.dispatch('fetchAllEvents');
+      }, 300);
+    },
     error => console.error(error));
 };
 
@@ -43,7 +50,12 @@ const updatePowerPlantProducing = (store, powerPlant, producing, type) => {
 
   PowerPlantApi.updateOnePowerPlant(
     newPowerPlant,
-    ok => store.commit(type, powerPlant),
+    (ok) => {
+      store.commit(type, powerPlant);
+      setTimeout(() => {
+        store.dispatch('fetchAllEvents');
+      }, 300);
+    },
     error => console.error(error));
 
   store.dispatch('fetchAllEvents');
