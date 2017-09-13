@@ -21,8 +21,6 @@ export default {
       title: {
         text: null,
       },
-      min: -100,
-      max: 100,
     },
     series: [{
       data: [],

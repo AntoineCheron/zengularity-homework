@@ -57,7 +57,9 @@ export default {
     ratio() {
       let res;
 
-      if (this.currentConsumption === 0) {
+      if (this.currentConsumption === 0 && this.currentProduction === 0) {
+        res = 0.5;
+      } else if (this.currentConsumption === 0) {
         res = 1;
       } else {
         res = this.currentProduction / (this.currentProduction + this.currentConsumption);

@@ -100,6 +100,11 @@
         }
       },
       close() {
+        setTimeout(() => {
+          this.name = '';
+          this.capacity = '';
+          this.type = '';
+        }, 300);
         this.$emit('closeAddPowerPlantModal');
       },
     },

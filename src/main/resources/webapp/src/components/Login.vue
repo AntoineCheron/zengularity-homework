@@ -270,7 +270,7 @@
                     background-image: url('../assets/img/login-bg.jpg');
 
                     &> p {
-                        width: 300px;
+                        width: 330px;
                         top: calc(100% - 155px);
                     }
                 }

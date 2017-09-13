@@ -5,7 +5,7 @@
     <div class="column is-two-thirds">
       <!-- This is the top part containing the title and the buttons to control the chart content -->
       <div class="chart-toppart">
-        <h2 class="dashboard-card-title">Energy storage evolution</h2>
+        <h2 class="dashboard-card-title">Energy production evolution</h2>
         <div class="buttons">
           <button @click="previousPeriod" class="no-outline-button chevron-button"><span class="icon is-small"><i class="fa fa-chevron-left"></i></span></button>
           <button @click="nextPeriod" class="no-outline-button chevron-button"><span class="icon is-small"><i class="fa fa-chevron-right"></i></span></button>
@@ -46,6 +46,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import EventBus from '@/services/EventBus';
 import HighchartsOptions from '../assets/json/highcharts-options';
 
 export default {
@@ -56,11 +57,12 @@ export default {
   ],
   data() {
     return {
+      options: HighchartsOptions.week,
       selectedPeriod: 'week',
     };
   },
   computed: {
-    options() {
+    computedOptions() {
       const opt = HighchartsOptions.week;
       opt.series[0].data = this.productionHistory;
       return opt;
@@ -80,6 +82,12 @@ export default {
     nextPeriod() {
       // TODO
     },
+  },
+  created() {
+    EventBus.$on('re-render-chart', () => {
+      this.options = HighchartsOptions.week;
+      this.options = this.computedOptions;
+    });
   },
 };
 </script>
